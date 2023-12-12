@@ -17,34 +17,44 @@
             </li>
         </ul>
 
-        <div v-if="!infiniteConfig.isEnd" class="flex justify-center py-4">
+        <!-- <div v-if="!infiniteConfig.isEnd" class="flex justify-center py-4">
             <span
                 class="loader"
                 style="--loader-color: #000"
                 ref="$loader"
             ></span>
-        </div>
+        </div> -->
 
-        <!-- v-if="!infiniteConfig.isEnd" -->
-        <div v-if="false" class="flex justify-center py-4">
-            <InfiniteBasic :target="$loader" @on-action="handleAction">
-                <!-- ref="$loader" -->
-                <span class="loader" style="--loader-color: #000"></span>
+        <div v-if="!infiniteConfig.isEnd" class="flex justify-center py-4">
+            <InfiniteBasic
+                :target="$loader"
+                :trigger="infiniteConfig.pageNo"
+                @on-action="handleAction"
+            >
+                <span
+                    class="loader"
+                    style="--loader-color: #000"
+                    ref="$loader"
+                ></span>
             </InfiniteBasic>
         </div>
     </main>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
-import { useElementVisibility } from "@vueuse/core";
+import {
+    ref,
+    reactive,
+    // watch
+} from "vue";
+// import { useElementVisibility } from "@vueuse/core";
 
 import { TheHeader } from "@components/layout";
 import { InfiniteBasic } from "@components/infinite";
 
 const $loader = ref<null | HTMLElement>(null);
 
-const loaderIsVisible = useElementVisibility($loader);
+// const loaderIsVisible = useElementVisibility($loader);
 
 type Page = {
     title: string;
@@ -62,10 +72,22 @@ const infiniteConfig = reactive<{
     isEnd: false,
 });
 
-function handleAction() {
+function intervalLikeAPI(time: number) {
+    return new Promise<void>((resolve) => {
+        setTimeout(() => {
+            console.log("게시글 업데이트");
+            resolve();
+        }, time);
+    });
+}
+
+async function handleAction() {
     const { list, pageNo } = infiniteConfig;
 
-    const tempArr: Page[] = Array(20).fill({
+    // 2초 뒤에 게시글 업데이트
+    await intervalLikeAPI(2000);
+
+    const tempArr: Page[] = Array(2).fill({
         title: `제목입니다 ${pageNo}`,
         content: `내용입니다 ${pageNo}`,
         writer: `이준용${pageNo}`,
@@ -80,11 +102,11 @@ function handleAction() {
     }
 }
 
-watch(loaderIsVisible, (to) => {
-    if (to) {
-        handleAction();
-    }
-});
+// watch(loaderIsVisible, (to) => {
+//     if (to) {
+//         handleAction();
+//     }
+// });
 </script>
 
 <style lang="scss" scoped></style>

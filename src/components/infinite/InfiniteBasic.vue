@@ -10,8 +10,12 @@ const props = defineProps({
         type: Object as () => HTMLElement | null,
         default: null,
     },
+    trigger: {
+        type: Number,
+        default: 1,
+    },
 });
-const { target } = toRefs(props);
+const { target, trigger } = toRefs(props);
 
 const emits = defineEmits(["onAction"]);
 
@@ -21,8 +25,10 @@ function setIntersection() {
             entries: IntersectionObserverEntry[],
             // observer: IntersectionObserver,
         ) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
+            entries.forEach(async (entry) => {
+                if (entry.isIntersecting && target.value) {
+                    observer.unobserve(target.value);
+
                     emits("onAction");
                 }
             });
@@ -41,6 +47,10 @@ watch(target, (to) => {
     if (to) {
         setIntersection();
     }
+});
+
+watch(trigger, () => {
+    setIntersection();
 });
 </script>
 
