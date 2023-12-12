@@ -18,24 +18,33 @@
         </ul>
 
         <div v-if="!infiniteConfig.isEnd" class="flex justify-center py-4">
+            <span
+                class="loader"
+                style="--loader-color: #000"
+                ref="$loader"
+            ></span>
+        </div>
+
+        <!-- v-if="!infiniteConfig.isEnd" -->
+        <div v-if="false" class="flex justify-center py-4">
             <InfiniteBasic :target="$loader" @on-action="handleAction">
-                <span
-                    class="loader"
-                    style="--loader-color: #000"
-                    ref="$loader"
-                ></span>
+                <!-- ref="$loader" -->
+                <span class="loader" style="--loader-color: #000"></span>
             </InfiniteBasic>
         </div>
     </main>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
+import { useElementVisibility } from "@vueuse/core";
 
 import { TheHeader } from "@components/layout";
 import { InfiniteBasic } from "@components/infinite";
 
 const $loader = ref<null | HTMLElement>(null);
+
+const loaderIsVisible = useElementVisibility($loader);
 
 type Page = {
     title: string;
@@ -70,6 +79,12 @@ function handleAction() {
         infiniteConfig.isEnd = true;
     }
 }
+
+watch(loaderIsVisible, (to) => {
+    if (to) {
+        handleAction();
+    }
+});
 </script>
 
 <style lang="scss" scoped></style>
