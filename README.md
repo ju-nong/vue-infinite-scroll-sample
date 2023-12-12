@@ -1,18 +1,16 @@
-# Vue 3 + TypeScript + Vite
+# Vue에서 무한 스크롤 구현해보기
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+기존에 사용하던 vue-infinite-loading 라이브러리가 맘에 안 들어서, 직접 `IntersectionObserver`로 구현
 
-## Recommended IDE Setup
+1. IntersectionObserver 사용
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+-   대부분 무한 스크롤 라이브러리에서 쓰이는 방식이 이거임
+-   매우 잘 됨, 커스텀 자유분방
+-   문제는 게시글이 업데이트 됐는데도, 옵저버로 걸은 태그가 계속 보이는 상태면 트리거가 안됨
 
-## Type Support For `.vue` Imports in TS
+2. VueUse에 useElementVisibility 사용
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+-   target으로 지정한 엘리먼트의 가시성을 반환 해주는 함수
+-   이걸로 무한 스크롤 구현하다가, 게시글 업데이트 됐는데 아직도 보여지고 있으면 다시 게시글 업데이트를 치려고 했다
+-   근데 해당 함수에서 반환해주는 ref 변수가 게시글 업데이트하는 함수에 nextTick을 걸고 조회해도 한발짝 늦게 값이 변경되는 이슈가 있다.
+-   알고보니 이 함수도 까보니 IntersectionObserver 기반임
